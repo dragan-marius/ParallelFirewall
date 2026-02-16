@@ -10,10 +10,9 @@
 typedef struct so_consumer_ctx_t {
 	struct so_ring_buffer_t *producer_rb;
 
-    /* TODO: add synchronization primitives for timestamp ordering */
-	//pentru sincronizare
+    /*synchronization primitives for timestamp ordering */
 	pthread_mutex_t log_mutex;
-	//fisierul de output
+	//output file
 	FILE * file;
 } so_consumer_ctx_t;
 

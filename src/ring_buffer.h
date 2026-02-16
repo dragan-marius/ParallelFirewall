@@ -15,11 +15,11 @@ typedef struct so_ring_buffer_t {
 	size_t len;
 	size_t cap;
 
-	/* TODO: Add syncronization primitives */
+	/*syncronization primitives */
 	pthread_mutex_t mutex;//pentru operatii critice
-	pthread_cond_t  plin;//daca len==cap
-	pthread_cond_t gol;//daca len==0
-	int buffer_deschis;//vin pachete in buffer
+	pthread_cond_t full;//len==cap
+	pthread_cond_t empty;//len==0
+	int buffer_deschis;
 } so_ring_buffer_t;
 
 int     ring_buffer_init(so_ring_buffer_t *rb, size_t cap);
