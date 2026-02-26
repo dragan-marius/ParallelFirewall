@@ -1,28 +1,22 @@
-BUILD_DIR := build
-UTILS_PATH ?= ../utils
-CPPFLAGS := -I$(UTILS_PATH)
-CFLAGS := -Wall -Wextra
+CC = gcc
+CFLAGS = -Wall -Wextra -ggdb -O0 -I../utils
+LDLIBS = -lpthread
 
-CFLAGS += -ggdb -O0
-LDLIBS := -lpthread
+SRCS = ring_buffer.c producer.c consumer.c packet.c ../utils/log/log.c
+OBJS = $(SRCS:.c=.o)
 
-SRCS:= ring_buffer.c producer.c consumer.c packet.c $(UTILS_PATH)/log/log.c
-HDRS := $(patsubst %.c,%.h,$(SRCS))
-OBJS := $(patsubst %.c,%.o,$(SRCS))
-
-.PHONY: all pack clean always
+.PHONY: all clean
 
 all: firewall serial
 
 firewall: $(OBJS) firewall.o
-	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $^ $(LDLIBS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
 
 serial: $(OBJS) serial.o
-	$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $^ $(LDLIBS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
 
-$(UTILS_PATH)/log/log.o: $(UTILS_PATH)/log/log.c $(UTILS_PATH)/log/log.h
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@  $<
+%.o : %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	-rm -f $(OBJS) serial.o firewall.o
-	-rm -f firewall serial
+	rm -f $(OBJS) firewall.o serial.o firewall serial
