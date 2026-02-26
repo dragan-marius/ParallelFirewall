@@ -19,7 +19,7 @@ typedef struct so_ring_buffer_t {
 	pthread_mutex_t mutex;//pentru operatii critice
 	pthread_cond_t full;//len==cap
 	pthread_cond_t empty;//len==0
-	int buffer_deschis;
+	int buffer_open;
 } so_ring_buffer_t;
 
 int     ring_buffer_init(so_ring_buffer_t *rb, size_t cap);

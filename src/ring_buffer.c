@@ -16,7 +16,7 @@ int ring_buffer_init(so_ring_buffer_t *ring, size_t cap)
 	pthread_mutex_init(&ring->mutex, NULL);
 	pthread_cond_init(&ring->empty, NULL);
 	pthread_cond_init(&ring->full, NULL);
-	ring->buffer_deschis = 1;
+	ring->buffer_open = 1;
 	return 0;
 }
 
@@ -24,9 +24,9 @@ ssize_t ring_buffer_enqueue(so_ring_buffer_t *ring, void *data, size_t size)
 {
 	pthread_mutex_lock(&ring->mutex);
 	/*Wait if there is not enough space for the new data*/
-	while (ring->len + size > ring->cap && ring->buffer_deschis)
+	while (ring->len + size > ring->cap && ring->buffer_open)
 		pthread_cond_wait(&ring->full, &ring->mutex);
-	if (!ring->buffer_deschis) {
+	if (!ring->buffer_open) {
 		pthread_mutex_unlock(&ring->mutex);
 		return -1;
 	}
@@ -47,9 +47,9 @@ ssize_t ring_buffer_dequeue(so_ring_buffer_t *ring, void *data, size_t size)
 
 	pthread_mutex_lock(&ring->mutex);
 	/*Wait if there is not enough data to read*/
-	while (ring->len < size && ring->buffer_deschis)
+	while (ring->len < size && ring->buffer_open)
 		pthread_cond_wait(&ring->empty, &ring->mutex);
-	if (ring->len < size && !ring->buffer_deschis) {
+	if (ring->len < size && !ring->buffer_open) {
 		pthread_mutex_unlock(&ring->mutex);
 		return -1;
 	}
@@ -79,7 +79,7 @@ void ring_buffer_stop(so_ring_buffer_t *ring)
 {
 
 	pthread_mutex_lock(&ring->mutex);
-	ring->buffer_deschis = 0;
+	ring->buffer_open = 0;
 	pthread_cond_broadcast(&ring->full);
 	pthread_cond_broadcast(&ring->empty);
 	pthread_mutex_unlock(&ring->mutex);

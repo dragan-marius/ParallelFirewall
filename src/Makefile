@@ -23,10 +23,6 @@ serial: $(OBJS) serial.o
 $(UTILS_PATH)/log/log.o: $(UTILS_PATH)/log/log.c $(UTILS_PATH)/log/log.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@  $<
 
-pack: clean
-	-rm -f ../src.zip
-	zip -r ../src.zip *
-
 clean:
 	-rm -f $(OBJS) serial.o firewall.o
 	-rm -f firewall serial
